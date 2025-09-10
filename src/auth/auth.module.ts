@@ -1,21 +1,22 @@
 // src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { UsersModule } from '../users/users.module'; // Importar UsersModule
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from './jwt.strategy';
+import { UsersModule } from '../users/users.module';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
 @Module({
   imports: [
-    UsersModule, // Importar para que possamos usar o UsersService
-    PassportModule,
+    UsersModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: 'SEU_SEGREDO_SUPER_SECRETO', // Mude isso para uma variável de ambiente em produção!
-      signOptions: { expiresIn: '60m' }, // Token expira em 60 minutos
+      secret: 'SECRET_KEY', // coloque sua secret do JWT
+      signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [AuthService],
   controllers: [AuthController],
+  providers: [AuthService],
+  exports: [AuthService, PassportModule],
 })
-export class AuthModule {}
+export class AuthModule {} // ✅ precisa ter exatamente esse nome

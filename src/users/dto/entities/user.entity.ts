@@ -1,19 +1,28 @@
+// src/users/entities/user.entity.ts
 
-// src/products/entities/product.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { ProductEntity } from '../../../products/entities/products.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Role } from '../../../common/enum/role.enum'; // 1. Importar o Enum
 
-@Entity({ name: 'products' }) // Mapeia para uma tabela chamada 'products'
-export class ProductEntity {
-  [x: string]: any;
-  @PrimaryGeneratedColumn() // Define como chave primária com auto-incremento
+@Entity({ name: 'users' })
+export class UserEntity {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 100 }) // Define uma coluna do tipo string (varchar)
-  name: string;
+  @Column({ unique: true })
+  email: string;
 
-  @Column('decimal', { precision: 10, scale: 2 }) // Define uma coluna decimal para preços
-  price: number;
+  @Column()
+  password: string;
 
-  @CreateDateColumn({ name: 'created_at' }) // Coluna que armazena a data de criação
-  createdAt: Date;
+  // 2. Adicionar a nova coluna 'role'
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.User, // Todo novo usuário será 'user' por padrão
+  })
+  role: Role;
+
+  @OneToMany(() => ProductEntity, (product) => product.user)
+  products: ProductEntity[];
 }

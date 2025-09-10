@@ -8,9 +8,6 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  findByEmail(email: string) {
-    throw new Error('Method not implemented.');
-  }
   constructor(
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
@@ -27,6 +24,13 @@ export class UsersService {
 
     return await this.usersRepository.save(user);
   }
-  
-  // Adicionaremos mais métodos aqui depois
+
+  /**
+   * CORREÇÃO APLICADA AQUI:
+   * O tipo de retorno agora é Promise<UserEntity | null> para corresponder
+   * ao comportamento do método findOneBy do TypeORM.
+   */
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    return this.usersRepository.findOneBy({ email });
+  }
 }
